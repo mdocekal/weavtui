@@ -1,0 +1,60 @@
+[project]
+name = "weavtui"
+version = "0.1.0"
+description = "Terminal UI explorer for Weaviate databases"
+readme = "README.md"
+authors = [
+    { name = "Martin Dočekal", email = "docekmartin@gmail.com" }
+]
+requires-python = ">=3.13"
+license = "Unlicense"
+license-files = ["LICENSE"]
+keywords = ["weaviate", "tui", "textual", "vector-database", "terminal", "explorer"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console :: Curses",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database :: Front-Ends",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "textual>=8.2.8",
+    "weaviate-client>=4.24,<5",
+]
+
+[project.urls]
+Homepage = "https://github.com/mdocekal/weavtui"
+Repository = "https://github.com/mdocekal/weavtui"
+Issues = "https://github.com/mdocekal/weavtui/issues"
+
+[project.scripts]
+weavtui = "weavtui:main"
+
+[build-system]
+requires = ["uv_build>=0.12.11,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1.post1",
+    "ruff>=0.17.3",
+    "textual-dev>=1.8.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
