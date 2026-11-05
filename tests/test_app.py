@@ -258,3 +258,24 @@ async def test_aliases_shown_in_sidebar_and_schema():
         assert "↳" not in str(options.get_option("Empty").prompt)
         summary = app.query_one("#schema", Static).content.renderables[0]
         assert "Books, Library" in str(summary)
+
+
+async def test_resize_and_reload_while_object_screen_is_open():
+    # The page-size timer and page loads can finish while a dialog is on top; they must
+    # update the main screen instead of looking for its widgets on the dialog.
+    app = WeavtuiApp(FakeBackend(), start="browse")
+    async with app.run_test(size=SIZE) as pilot:
+        await settle(pilot)
+        app.query_one(DataTable).focus()
+        await pilot.press("enter")
+        await pilot.pause()
+        assert isinstance(app.screen, ObjectScreen)
+        await pilot.resize_terminal(160, 50)
+        await pilot.pause(0.4)
+        app.load_page()
+        await pilot.pause(0.3)  # not settle(): the open-object worker awaits the dialog
+        assert isinstance(app.screen, ObjectScreen)
+        assert app.page_size == 50
+        await pilot.press("escape")
+        await pilot.pause()
+        assert app.query_one(DataTable).row_count == 50

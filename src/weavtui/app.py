@@ -15,6 +15,7 @@ from textual import on, work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.css.query import NoMatches
 from textual.timer import Timer
 from textual.widgets import (
     DataTable,
@@ -177,7 +178,10 @@ class WeavtuiApp(App[None]):
         self._page_size_timer = self.set_timer(0.2, self._apply_page_size)
 
     def _measured_page_size(self) -> int | None:
-        table = self.query_one(ObjectsTable)
+        try:
+            table = self.query_one(ObjectsTable)
+        except NoMatches:  # the app is shutting down and its widgets are gone
+            return None
         visible = table.scrollable_content_region.height - table.header_height
         return page_size_for(visible) if table.size.height > 0 else None
 
@@ -193,6 +197,8 @@ class WeavtuiApp(App[None]):
             self.load_page()
 
     async def on_unmount(self) -> None:
+        if self._page_size_timer is not None:
+            self._page_size_timer.stop()
         await asyncio.to_thread(self.backend.close)
 
     # -- connection & collections -------------------------------------------------------
