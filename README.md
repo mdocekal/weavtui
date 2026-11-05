@@ -109,10 +109,11 @@ year >= 2020 and published = true
 title like "*vector*"
 tags contains nlp, ml
 published_at > 2024-01-01
+id = 3f2a9c1e-8b7d-4e6f-9a01-23456789abcd
 ```
 
 Operators: `=` `!=` `<` `<=` `>` `>=` `like` `contains` (matches any of the
-comma-separated values).
+comma-separated values). `id` is the object's UUID and supports `=`, `!=` and `contains`.
 
 ### Limitations
 

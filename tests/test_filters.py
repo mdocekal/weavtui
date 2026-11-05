@@ -59,3 +59,26 @@ def test_convert_date_gets_timezone():
 
 def test_unknown_types_pass_through_without_schema():
     assert build_filter("anything = x", {}).value == "x"
+
+
+UUID = "3f2a9c1e-8b7d-4e6f-9a01-23456789abcd"
+
+
+def test_id_equal_filters_by_uuid():
+    f = build_filter(f"id = {UUID.upper()}", TYPES)
+    assert f.target == "_id"
+    assert f.value == UUID
+    assert f.operator.name == "EQUAL"
+
+
+def test_id_contains_and_combination():
+    other = "00000000-0000-0000-0000-000000000001"
+    f = build_filter(f'id contains {UUID}, "{other}" and year > 2000', TYPES)
+    assert f.filters[0].value == [UUID, other]
+    assert f.filters[1].value == 2000
+
+
+@pytest.mark.parametrize("text", ["id = nope", "id > " + UUID, "id contains ,"])
+def test_id_errors(text):
+    with pytest.raises(FilterError):
+        build_filter(text, TYPES)

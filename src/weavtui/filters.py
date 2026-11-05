@@ -10,14 +10,17 @@ Examples:
     year >= 2020 and published = true
     title like "*vector*"
     tags contains nlp, ml          (any of the comma-separated values)
+    id = 3f2a...                   (the object's UUID; = != contains)
 
-Values are converted to the property's data type taken from the schema.
+Values are converted to the property's data type taken from the schema. ``id`` is the
+object's UUID; Weaviate reserves that name, so it cannot clash with a property.
 """
 
 from __future__ import annotations
 
 import re
 import shlex
+import uuid
 from datetime import datetime
 from typing import Any
 
@@ -26,6 +29,30 @@ from weaviate.classes.query import Filter
 
 class FilterError(ValueError):
     pass
+
+
+ID = "id"
+_ID_OPERATORS = ("=", "!=", "contains")
+
+
+def _uuid(raw: str) -> str:
+    value = _unquote(raw)
+    try:
+        return str(uuid.UUID(value))
+    except ValueError as exc:
+        raise FilterError(f"{value!r} is not a valid UUID") from exc
+
+
+def _id_condition(op: str, raw: str, part: str) -> Any:
+    f = Filter.by_id()
+    if op == "contains":
+        values = [_uuid(v) for v in raw.split(",") if v.strip()]
+        if not values:
+            raise FilterError(f"no values after 'contains' in {part!r}")
+        return f.contains_any(values)
+    if op not in _ID_OPERATORS:
+        raise FilterError(f"id supports only {', '.join(_ID_OPERATORS)}, not {op!r}")
+    return f.equal(_uuid(raw)) if op == "=" else f.not_equal(_uuid(raw))
 
 
 _COND = re.compile(
@@ -96,6 +123,9 @@ def build_filter(text: str, types: dict[str, str]) -> Any | None:
         if not m:
             raise FilterError(f"cannot parse {part!r}; expected e.g. year >= 2020")
         prop, op, raw = m["prop"], m["op"].lower(), m["value"]
+        if prop.lower() == ID:
+            conditions.append(_id_condition(op, raw, part))
+            continue
         if types and prop not in types:
             raise FilterError(f"unknown property {prop!r}")
         data_type = types.get(prop)
