@@ -1,0 +1,123 @@
+#sidebar {
+    width: 32;
+    border-right: tall $primary 40%;
+}
+
+#main {
+    width: 1fr;  /* the rest of the width next to the sidebar, not 100% */
+}
+
+#collections {
+    height: 1fr;
+    border: none;
+}
+
+.section {
+    text-style: bold;
+    color: $primary;
+    padding: 0 1;
+    margin-top: 1;
+}
+
+#query-bar {
+    height: auto;
+}
+
+#query-bar Input {
+    width: 1fr;
+}
+
+#objects {
+    height: 1fr;
+    /* Always show the scrollbars so it is obvious when a page holds more rows than fit. */
+    overflow-y: scroll;
+    scrollbar-size-vertical: 2;
+}
+
+#pager {
+    padding: 0 1;
+    color: $text-muted;
+}
+
+#schema, #object-view {
+    padding: 0 1;
+}
+
+#object-meta {
+    margin-top: 1;
+}
+
+/* dialogs */
+
+ModalScreen {
+    align: center middle;
+}
+
+.dialog {
+    width: 70;
+    height: auto;
+    max-height: 90%;
+    padding: 1 2;
+    border: thick $primary;
+    background: $surface;
+}
+
+.dialog.wide {
+    width: 90%;
+    height: 90%;
+}
+
+.dialog-title {
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.hint {
+    color: $text-muted;
+}
+
+.error {
+    color: $error;
+}
+
+#editor {
+    height: 1fr;
+}
+
+.buttons {
+    height: auto;
+    margin-top: 1;
+    align-horizontal: right;
+}
+
+.buttons Button {
+    margin-left: 1;
+}
+
+#objects > .datatable--header,
+#objects > .datatable--header-hover,
+#objects > .datatable--header-cursor {
+    background: ansi_default;
+    color: $primary;
+    text-style: bold;
+}
+
+/* Row shading: a faint tint of the theme green over the terminal background. */
+#objects > .datatable--even-row {
+    background: $primary 5%;
+}
+
+#diagram-legend {
+    color: $text-muted;
+    padding: 0 1;
+}
+
+#diagram-view {
+    height: 1fr;
+    overflow: auto auto;
+}
+
+#diagram-canvas {
+    width: auto;
+    height: auto;
+}
